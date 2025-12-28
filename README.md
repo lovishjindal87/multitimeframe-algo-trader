@@ -1,59 +1,102 @@
-# Numatix Quant Developer Assignment Submission
+# Multi-Timeframe Trading Strategy
+
+Python trading system with backtesting and live trading on Binance Testnet.
 
 ## Project Overview
-This project implements a simple algorithmic trading system using historical 
-and live market data. It includes a backtesting engine and a live trading 
-engine that both execute the same strategy logic to ensure consistency.
 
+Simple algorithmic trading system using historical and live market data. Both backtesting and live trading use the same strategy class to maintain consistency.
 
-## Strategy Logic
-The strategy is a simple moving-average–based system:
-- A long position is opened when the current price crosses above the moving average.
-- The position is closed when the price crosses back below the moving average.
-- Only one position can be open at a time.
-- No leverage or complex risk management is used.
-- This logic is intentionally minimal to make behavior easy to verify and compare between backtesting and live execution.
+## Strategy Logic (High-Level)
+
+Simple Moving Averages on two timeframes:
+
+**Entry:** Long when 15m and 1h close prices are both above their 20-period SMAs  
+**Exit:** Close when 15m close drops below 15m SMA  
+**Risk:** Fixed 0.001 BTC per trade, one position max, no stops
 
 ## Architecture Overview
-strategy.py        → Contains trading logic and indicator calculations
-backtest.py        → Runs historical backtests using Backtesting.py
-live_trading.py    → Executes live trades on Binance testnet
-historical_data.csv → OHLCV data used for backtesting
 
+```
+├── config/config.py          # Configuration
+├── src/
+│   ├── strategy/            # Strategy (used by both backtest & live)
+│   ├── backtesting/         # Backtesting engine
+│   ├── trading/             # Binance API and execution
+│   └── utils/               # Utilities
+├── data/                     # Trade logs
+├── scripts/generate_data.py  # Generate test data
+├── run_backtest.py
+└── run_live_trading.py
+```
 
-## How to run
-# Run backtest
-python backtest.py
-# Run live trading (testnet)
-python live_trading.py
+The strategy class is stateless and used by both backtest and live trading.
 
-## Backtesting & Live Trading Parity
-The same strategy logic is used in both modes:
-- Backtesting runs on historical OHLCV data
-- Live trading consumes real-time market data from Binance Testnet
-While timestamps and prices differ due to real-world market movement, the trade logic and signal generation are identical.
+## How to Run
+
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+For live trading, you need API keys:
+1. Get testnet keys from https://testnet.binance.vision/
+2. Copy `.env.example` to `.env`
+3. Add your keys to `.env`
+
+Backtesting doesn't need API keys.
+
+Generate test data:
+```bash
+python scripts/generate_data.py
+```
+
+Run backtest:
+```bash
+python run_backtest.py
+```
+
+Run live trading:
+```bash
+python run_live_trading.py
+```
+
+## How Parity Between Backtest and Live Execution Was Ensured
+
+Both backtest and live trading use the same `MultiTimeframeStrategy` class. Same methods, same logic, same entry/exit rules. The strategy lives in one file (`src/strategy/multi_tf.py`) so there's no duplication. Both modes call `compute_indicators()` and `generate_signal()` identically.
+
+Trade logs use the same format so you can compare results directly.
 
 ## Trade Logging
-Trades are logged to CSV files for transparency and validation.
-Each trade includes:
-- Timestamp
-- Symbol
-- Trade direction (BUY / SELL)
-- Entry price
-- Exit price
-These logs allow verification that backtest and live execution behave consistently.
+
+Trades are saved to CSV files in `data/`:
+
+- `backtest_trades.csv`: EntryTime, ExitTime, Symbol, Side, EntryPrice, ExitPrice, PnL
+- `live_trades.csv`: timestamp, symbol, side, price, quantity, entry_price, exit_price, pnl, metadata
+
+Use `BacktestAnalyzer.compare_with_live()` to compare results.
+
+## Observations from Trade Matching
+
+When given the same market conditions, the strategy generates identical signals in both modes. Entry/exit logic is consistent.
+
+Expected differences: timestamps (historical vs real-time), prices (market moves), trade frequency (volatility), and live execution includes fills/slippage.
+
+Trade direction and entry/exit rules match between backtest and live.
 
 ## Notes / Assumptions
-- Strategy is intentionally simple for clarity and not optimized for profitability.
-- No stop-loss or take-profit logic is implemented.
-- The system is designed for demonstration and evaluation purposes
-- Live trading uses Binance Testnet.
+
+- Uses Binance Testnet only
+- Simple strategy for clarity
+- No stop-loss or take-profit
+- Fixed 0.001 BTC position size
+- Stateless strategy
+- One position at a time
+- For evaluation, not production
 
 ## Summary
-This project demonstrates:
-- Correct implementation of a trading strategy
-- Consistent behavior between backtest and live execution
-- Proper data handling and logging
-- Clean and modular code structure
-The focus is correctness, reproducibility, and system design. It does not represent trading performance
-# By LOVISH JINDAL
+
+The system uses a single strategy class for both backtesting and live trading, ensuring consistent behavior. Focus is on correctness and system design, not performance.
+
+---
+
+**By LOVISH JINDAL**

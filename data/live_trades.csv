@@ -1,3 +1,2 @@
-timestamp,symbol,side,price,quantity
-1766864369.548556,BTCUSDT,BUY,87550.25,0.001
-1766868487.926003,BTCUSDT,BUY,87550.63,0.001
+timestamp,symbol,side,price,quantity,entry_price,exit_price,pnl,metadata
+1766921079.352675,BTCUSDT,BUY,87892.69,0.001,87892.69,,,{'order_id': 15995195}

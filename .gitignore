@@ -1,3 +1,20 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets 
+.env
+
+*.pem
 test-prv-key.pem
-.venv
-__pycache__
+

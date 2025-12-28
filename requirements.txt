@@ -1,3 +1,4 @@
 pandas>=1.5.0
 backtesting>=0.3.3
 python-binance>=1.0.19
+python-dotenv>=1.0.0

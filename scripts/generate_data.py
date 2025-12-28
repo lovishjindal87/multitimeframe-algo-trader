@@ -1,6 +1,19 @@
+"""
+Utility script to generate synthetic historical OHLCV data for backtesting.
+"""
+
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import sys
+import os
+
+# Add project root to path for config access
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from config.config import HISTORICAL_DATA_PATH
 
 # Parameters
 START_PRICE = 87500
@@ -44,6 +57,9 @@ df = pd.DataFrame(
     columns=["timestamp", "Open", "High", "Low", "Close", "Volume"]
 )
 
-df.to_csv("historical_data.csv", index=False)
+df.set_index("timestamp", inplace=True)
+os.makedirs(os.path.dirname(HISTORICAL_DATA_PATH) if os.path.dirname(HISTORICAL_DATA_PATH) else '.', exist_ok=True)
+df.to_csv(HISTORICAL_DATA_PATH)
 
-print("✅ historical_data.csv generated with", len(df), "rows")
+print(f"{HISTORICAL_DATA_PATH} generated with {len(df)} rows")
+
