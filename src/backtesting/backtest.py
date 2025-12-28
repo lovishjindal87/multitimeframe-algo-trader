@@ -80,10 +80,7 @@ def run_backtest(data_path: str = None) -> dict:
         ]].copy()
         
         trades_df["Symbol"] = "BTCUSDT"
-        trades_df["Side"] = trades_df.apply(
-            lambda row: "LONG" if row["EntryPrice"] < row["ExitPrice"] else "SHORT",
-            axis=1
-        )
+        trades_df["Side"] = "LONG" 
         
         trades_df["PnL"] = trades_df.apply(
             lambda row: (row["ExitPrice"] - row["EntryPrice"]) * 0.2,
