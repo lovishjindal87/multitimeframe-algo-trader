@@ -1,4 +1,4 @@
-# Numatix Quant Developer Assignment Submission
+# Multi-timeframe Algorithmic Trading System
 
 ## Project Overview
 This project implements a simple algorithmic trading system using historical 
