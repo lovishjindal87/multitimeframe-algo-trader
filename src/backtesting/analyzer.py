@@ -151,9 +151,14 @@ class BacktestAnalyzer:
         
         live_trades = pd.read_csv(live_path)
         
+        # Count completed trades (SELL orders) for live trading
+        # Backtest counts completed trades, live counts individual orders (BUY + SELL)
+        live_completed_trades = len(live_trades[live_trades['side'] == 'SELL']) if 'side' in live_trades.columns else 0
+        
         comparison = {
             'backtest_trades': len(backtest_trades),
-            'live_trades': len(live_trades),
+            'live_trades': live_completed_trades,
+            'live_total_orders': len(live_trades),
             'backtest_pnl': backtest_trades['PnL'].sum() if 'PnL' in backtest_trades.columns else 0,
             'live_pnl': live_trades['pnl'].sum() if 'pnl' in live_trades.columns else 0
         }
